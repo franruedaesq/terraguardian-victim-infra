@@ -12,23 +12,22 @@ jobs:
   terraguardian-analysis:
     runs-on: ubuntu-latest
     steps:
-      # Step 1: Checkout the infrastructure code (the "victim")
       - name: Checkout Infra Repo
         uses: actions/checkout@v4
         with:
-          path: "infrastructure" # Checkout to a specific subdirectory
+          path: infrastructure
 
-      # Step 2: Checkout the agent's code from its own repository
       - name: Checkout Agent Repo
         uses: actions/checkout@v4
         with:
           repository: franruedaesq/terraguardian-project
-          path: "agent"
+          path: .
 
-      # Step 3: Build and Run the TerraGuardian Agent
-      - name: Run TerraGuardian Agent
+      - name: Build and Run TerraGuardian Agent
         run: |
           docker build -t terraguardian-agent ./agent
+
+          # Ejecutamos el contenedor
           docker run \
             -v ${{ github.workspace }}/infrastructure:/app/infrastructure \
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
