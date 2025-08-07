@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  pull-requests: write # Required to post comments on PRs
+  pull-requests: write
 
 jobs:
   terraguardian-analysis:
@@ -14,24 +14,21 @@ jobs:
     steps:
       - name: Checkout Infra Repo
         uses: actions/checkout@v4
-        with:
-          path: infrastructure
 
       - name: Checkout Agent Repo
         uses: actions/checkout@v4
         with:
           repository: franruedaesq/terraguardian-project
-          path: .
+          path: agent
 
       - name: Build and Run TerraGuardian Agent
         run: |
           docker build -t terraguardian-agent ./agent
 
-          # Ejecutamos el contenedor
+
           docker run \
-            -v ${{ github.workspace }}/infrastructure:/app/infrastructure \
-            -v ${{ github.event_path }}:/github/workflow/event.json \
+            -v ${{ github.workspace }}:/app/infrastructure \
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-            -e GITHUB_EVENT_PATH=/github/workflow/event.json \
+            -e GITHUB_EVENT_PATH=${{ github.event_path }} \
             terraguardian-agent
