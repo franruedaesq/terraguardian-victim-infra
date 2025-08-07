@@ -1,0 +1,37 @@
+name: "TerraGuardian PR Review"
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  pull-requests: write # Required to post comments on PRs
+
+jobs:
+  terraguardian-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Checkout the infrastructure code (the "victim")
+      - name: Checkout Infra Repo
+        uses: actions/checkout@v4
+        with:
+          path: "infrastructure" # Checkout to a specific subdirectory
+
+      # Step 2: Checkout the agent's code from its own repository
+      - name: Checkout Agent Repo
+        uses: actions/checkout@v4
+        with:
+          repository: franruedaesq/terraguardian-project
+          path: "agent"
+
+      # Step 3: Build and Run the TerraGuardian Agent
+      - name: Run TerraGuardian Agent
+        run: |
+          docker build -t terraguardian-agent ./agent
+          docker run \
+            -v ${{ github.workspace }}/infrastructure:/app/infrastructure \
+            -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
+            -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
+            -e GITHUB_EVENT_PATH=${{ github.event_path }} \
+            terraguardian-agent
