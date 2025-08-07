@@ -36,7 +36,7 @@ resource "aws_s3_bucket" "user_uploads_secure" {
   }
 }
 
-# Helper to ensure bucket names are unique
+# ensure bucket names are unique
 resource "random_id" "id" {
   byte_length = 8
 }
