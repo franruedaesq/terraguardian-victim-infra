@@ -14,20 +14,21 @@ jobs:
     steps:
       - name: Checkout Infra Repo
         uses: actions/checkout@v4
+        with:
+          path: infrastructure
 
       - name: Checkout Agent Repo
         uses: actions/checkout@v4
         with:
           repository: franruedaesq/terraguardian-project
-          path: agent
+          path: agent-repo
 
       - name: Build and Run TerraGuardian Agent
         run: |
-          docker build -t terraguardian-agent ./agent
-
+          docker build -t terraguardian-agent ./agent-repo/agent
 
           docker run \
-            -v ${{ github.workspace }}:/app/infrastructure \
+            -v ${{ github.workspace }}/infrastructure:/app/infrastructure \
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
             -e GITHUB_EVENT_PATH=${{ github.event_path }} \
