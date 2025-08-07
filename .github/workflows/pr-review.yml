@@ -30,7 +30,8 @@ jobs:
           # Ejecutamos el contenedor
           docker run \
             -v ${{ github.workspace }}/infrastructure:/app/infrastructure \
+            -v ${{ github.event_path }}:/github/workflow/event.json \
             -e GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} \
             -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
-            -e GITHUB_EVENT_PATH=${{ github.event_path }} \
+            -e GITHUB_EVENT_PATH=/github/workflow/event.json \
             terraguardian-agent
